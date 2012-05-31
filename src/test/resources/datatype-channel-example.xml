@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/integration
+                http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <!-- A data type channel restricts the types of objects that can go onto the channel.
+         An exception is thrown if you try to put an object of a bad type onto the channel.
+         An optional integrationConversionService can be included to convert and avoid the exception -->
+
+    <!-- Channel for incoming orders -->
+    <int:channel id="latteOnlyChannel" datatype="examples.components.Latte"/>
+
+    <int:channel id="latteConverterChannel" datatype="examples.components.Latte"/>
+
+    <!-- Subscriber - Barista 1, subscribes to both channels -->
+    <int:service-activator id="barista1" input-channel="latteOnlyChannel" ref="ben" method="makeCoffee"/>
+
+    <int:service-activator id="barista2" input-channel="latteConverterChannel" ref="ben" method="makeCoffee"/>
+
+    <bean id="ben" class="examples.components.Barista">
+        <constructor-arg value="Ben"/>
+    </bean>
+
+</beans>

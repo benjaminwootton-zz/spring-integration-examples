@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/integration
+                http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+    <!-- Unlike default channels, the publish subscribe channels will publish onto all receivers -->
+
+    <!-- Simple producer -->
+    <bean id="customer" class="examples.components.Customer">
+        <constructor-arg name="orderManager" ref="orderManager"/>
+    </bean>
+
+    <!-- Simple facade method which accepts messages into channel -->
+    <int:gateway id="orderManager" service-interface="examples.components.OrderManager" default-request-channel="coffeeOrders"/>
+
+    <!-- Channel for incoming orders -->
+    <int:publish-subscribe-channel id="coffeeOrders"/>
+
+    <!-- Subscriber - Barista 1 -->
+    <int:service-activator id="barista1" input-channel="coffeeOrders" ref="ben" method="makeCoffee"/>
+
+    <bean id="ben" class="examples.components.Barista">
+        <constructor-arg value="Ben"/>
+    </bean>
+
+    <!-- Subscriber - Barista 2 -->
+    <int:service-activator id="barista2" input-channel="coffeeOrders" ref="dave" method="makeCoffee"/>
+
+    <bean id="dave" class="examples.components.Barista">
+        <constructor-arg value="Dave"/>
+    </bean>
+
+     <!-- Subscriber - Barista 3 -->
+    <int:service-activator id="barista3" input-channel="coffeeOrders" ref="emma" method="makeCoffee"/>
+
+    <bean id="emma" class="examples.components.Barista">
+        <constructor-arg value="Emma"/>
+    </bean>
+
+</beans>
